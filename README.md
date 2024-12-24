@@ -81,7 +81,7 @@ dotnet run
 5. Acesse o Swagger para explorar os endpoins:
 
 ```
-http://localhost:5002/swagger
+http://localhost:5202/swagger
 ```
 
 ## Endpoints Principais
