@@ -1,5 +1,3 @@
-// Unused usings removed.
-
 namespace RestaurantAPI
 {
     public class Program
