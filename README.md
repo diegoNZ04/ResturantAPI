@@ -56,27 +56,19 @@ controle de reservas, garantindo uma experiência segura e eficiente.
 git clone https://github.com/diegoNZ04/ResturantAPI.git
 ```
 
-2. Configure o banco de dados SqlServer no arquivo `appsettings.json`
-
-```
-"ConnectionStrings": {
-    "DefaultConnection": "Server=localhost\\sqlexpress;Initial Catalog=ResturantDb; Integrated Security=True; TrustServerCertificate=true"
-}
-```
-
-3. Aplique as migrações do banco de dados:
+2. Aplique as migrações do banco de dados:
 
 ```
 dotnet ef database update
 ```
 
-4. Rode o projeto:
+3. Rode o projeto:
 
 ```
 dotnet run
 ```
 
-5. Acesse o Swagger para explorar os endpoints:
+4. Acesse o Swagger para explorar os endpoints:
 
 ```
 http://localhost:5202/swagger
