@@ -82,6 +82,18 @@ dotnet run
 http://localhost:5202/swagger
 ```
 
+## Executando Com Docker
+
+### Pré-requisitos
+
+- Tenha o Docker e o DockerCompose instalados
+
+Abra um terminal e execute:
+
+```
+docker run -p 5202:5202 dnzamorim/resturantapi:1.0
+```
+
 ## Endpoints Principais
 
 ### Autenticação
