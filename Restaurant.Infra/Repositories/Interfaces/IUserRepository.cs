@@ -1,9 +1,11 @@
-namespace Infra.Repositories.Interfaces;
+using Restaurant.Domain.Entities;
+
+namespace Restaurant.Infra.Repositories.Interfaces;
 
 public interface IUserRepository
 {
     Task AddUserAsync(User user);
-    Task GetUserByIdAsync(int id);
-    Task GetUserByEmailAsync(string email);
+    Task<User> GetUserByIdAsync(int id);
+    Task<User> GetUserByEmailAsync(string email);
     Task UpdateUserAsync(User user);
 }
