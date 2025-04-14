@@ -1,0 +1,30 @@
+Endpoints
+
+api/auth/register (POST)
+
+api/auth/login (POST)
+
+api/reserves/create-reserve (POST)
+
+api/reserves/get-all-reserves (GET)
+
+api/reserves/get-reserve-by-id (GET)
+
+api/reserves/update-reserve (UPDATE)
+
+api/reserves/cancel-reserve (PATCH)
+
+api/reserves/delete-reserve (DELETE)
+
+api/tables/create-table (POST)
+
+api/tables/get-all-tables (GET)
+
+api/tables/get-table-by-id (GET)
+
+api/tables/update-table (UPDATE)
+
+api/tables/update-status (PATCH)
+
+api/tables/delete-table (DELETE)
+
