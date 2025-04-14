@@ -1,3 +1,5 @@
+using Restaurant.API;
+
 namespace RestaurantAPI
 {
     public class Program

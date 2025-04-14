@@ -3,105 +3,125 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using RestaurantAPI.Data;
-using RestaurantAPI.Services;
-using RestaurantAPI.Services.Interfaces;
-using RestaurantAPI.Utilities;
-using RestaurantAPI.Utilities.Interfaces;
+using Restaurant.Application.Mappings;
+using Restaurant.Application.Services;
+using Restaurant.Application.Services.Interfaces;
+using Restaurant.Infra.Data;
+using Restaurant.Infra.Repositories;
+using Restaurant.Infra.Repositories.Interfaces;
 
-namespace RestaurantAPI
+namespace Restaurant.API;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
+        Configuration = configuration;
+    }
+    public IConfiguration Configuration { get; }
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllers();
+
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen(options =>
         {
-            Configuration = configuration;
-        }
-        public IConfiguration Configuration { get; }
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddAuthentication(options =>
+            options.SwaggerDoc("v2", new OpenApiInfo
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
+                Title = "ResturantAPI",
+                Version = "V2",
+                Description = "Application for managing table reservations in restaurants",
+                Contact = new OpenApiContact
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["JwtSettings:Issuer"],
-                    ValidAudience = Configuration["JwtSettings:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSettings:SecretKey"]))
-                };
+                    Name = "Diego Amorim",
+                    Email = "diegoamorim03152004@gmail.com"
+                },
             });
 
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IReserveService, ReserveService>();
-            services.AddScoped<ITableService, TableService>();
-            services.AddScoped<IPasswordHasher, PasswordHasher>();
-            services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
-
-            services.AddControllers();
-
-            services.AddAutoMapper(typeof(RestaurantMappingProfile));
-
-            services.AddSwaggerGen(options =>
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "Insira o token JWT aqui"
-                });
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Enter the JWT token in the field below."
+            });
 
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
                 {
+                    new OpenApiSecurityScheme
                     {
-                        new OpenApiSecurityScheme{
                         Reference = new OpenApiReference
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-
+                            Id = "Bearer",
+                            Type = ReferenceType.SecurityScheme
                         }
                     },
                     new string[] {}
-                    }
-                });
+                }
             });
+        });
 
-            services.AddDbContext<ApplicationContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDatabaseDeveloperPageExceptionFilter();
-        }
+        services.AddDbContext<ApplicationContext>(options =>
+            options.UseInMemoryDatabase("RestaurantDB"));
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        services.AddAuthentication(options =>
+           {
+               options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+               options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+           }).AddJwtBearer(options =>
+           {
+               options.TokenValidationParameters = new TokenValidationParameters
+               {
+                   ValidateIssuer = true,
+                   ValidateAudience = true,
+                   ValidateLifetime = true,
+                   ValidateIssuerSigningKey = true,
+                   ValidIssuer = Configuration["JwtSettings:Issuer"],
+                   ValidAudience = Configuration["JwtSettings:Audience"],
+                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSettings:SecretKey"]))
+               };
+           });
+
+        services.AddAuthorization();
+
+        services.AddAutoMapper(
+            typeof(AuthProfile)
+        );
+
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ITableRepository, TableRepository>();
+        services.AddScoped<IReserveRepository, ReserveRepository>();
+
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IHasherService, HasherService>();
+        services.AddScoped<IJwtService, JwtService>();
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
         {
-            app.UseHttpsRedirection();
-
-            if (env.IsDevelopment())
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
             {
-                app.UseSwagger();
-                app.UseSwaggerUI(config =>
-                {
-                    config.SwaggerEndpoint("/swagger/v1/swagger.json", "RestaurantAPI v1");
-                });
-            }
-
-            app.UseRouting();
-            app.UseAuthorization();
-            app.UseAuthentication();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
+                options.SwaggerEndpoint("/swagger/v2/swagger.json", "RestaurantAPI v2");
+                options.RoutePrefix = string.Empty;
             });
-
         }
+
+        app.UseHttpsRedirection();
+        app.UseRouting();
+
+        app.UseAuthorization();
+        app.UseAuthentication();
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
     }
 }
