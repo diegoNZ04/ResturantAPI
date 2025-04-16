@@ -41,6 +41,11 @@ public class TableRepository : ITableRepository
         return await _context.Tables.FirstOrDefaultAsync(u => u.Id == id);
     }
 
+    public async Task<Table> GetTableByNumberAsync(int tableNumber)
+    {
+        return await _context.Tables.FirstOrDefaultAsync(t => t.TableNumber == tableNumber);
+    }
+
     public async Task UpdateTableAsync(Table table)
     {
         _context.Tables.Update(table);

@@ -11,15 +11,28 @@ namespace Restaurant.Application.Services;
 public class ReserveService : IReserveService
 {
     private readonly IReserveRepository _reserveRepository;
+    private readonly ITableRepository _tableRepository;
     private readonly IMapper _mapper;
-    public ReserveService(IReserveRepository reserveRepository, IMapper mapper)
+    public ReserveService(IReserveRepository reserveRepository, ITableRepository tableRepository, IMapper mapper)
     {
         _reserveRepository = reserveRepository;
+        _tableRepository = tableRepository;
         _mapper = mapper;
     }
 
     public async Task<CreateReserveResponse> CreateReserveAsync(CreateReserveRequest request)
     {
+        var table = await _tableRepository.GetTableByNumberAsync(request.TableNumber);
+
+        if (table == null)
+            throw new Exception("Mesa não encontrada.");
+
+        if (table.Status != TableStatus.available)
+            throw new Exception("Mesa não está disponível para reserva.");
+
+        if (request.PeopleNumber > table.Capacity)
+            throw new Exception("Número de pessoas excede a capacidade da mesa.");
+
         var reserve = _mapper.Map<Reserve>(request);
 
         await _reserveRepository.AddReserveAsync(reserve);
