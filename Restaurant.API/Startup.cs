@@ -67,28 +67,28 @@ public class Startup
         services.AddDbContext<ApplicationContext>(options =>
             options.UseInMemoryDatabase("RestaurantDB"));
 
-        services.AddAuthentication(options =>
-           {
-               options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-               options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-           }).AddJwtBearer(options =>
-           {
-               options.TokenValidationParameters = new TokenValidationParameters
-               {
-                   ValidateIssuer = true,
-                   ValidateAudience = true,
-                   ValidateLifetime = true,
-                   ValidateIssuerSigningKey = true,
-                   ValidIssuer = Configuration["JwtSettings:Issuer"],
-                   ValidAudience = Configuration["JwtSettings:Audience"],
-                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSettings:SecretKey"]))
-               };
-           });
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = Configuration["JwtSettings:Issuer"],
+                ValidAudience = Configuration["JwtSettings:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSettings:SecretKey"]))
+            };
+        });
 
         services.AddAuthorization();
 
         services.AddAutoMapper(
-            typeof(AuthProfile)
+            typeof(AuthProfile),
+            typeof(ReserveProfile),
+            typeof(TableProfile)
         );
 
         services.AddScoped<IUserRepository, UserRepository>();
@@ -98,6 +98,8 @@ public class Startup
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IHasherService, HasherService>();
         services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IReserveService, ReserveService>();
+        services.AddScoped<ITableService, TableService>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -116,8 +118,8 @@ public class Startup
         app.UseHttpsRedirection();
         app.UseRouting();
 
-        app.UseAuthorization();
         app.UseAuthentication();
+        app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
         {
