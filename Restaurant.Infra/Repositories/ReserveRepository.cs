@@ -39,7 +39,6 @@ public class ReserveRepository : IReserveRepository
     public async Task<Reserve> GetReserveByIdAsync(int id)
     {
         return await _context.Reserves
-            .Include(u => u.Tables)
             .FirstOrDefaultAsync(u => u.Id == id);
     }
 

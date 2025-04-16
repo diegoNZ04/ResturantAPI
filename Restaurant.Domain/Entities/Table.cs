@@ -13,7 +13,5 @@ public class Table
     public int TableNumber { get; set; }
     public int Capacity { get; set; }
     public TableStatus Status { get; set; }
-    public int ReserveId { get; set; }
-    [ForeignKey("ReserveId")]
-    public Reserve Reserve { get; set; } = null!;
+    public ICollection<Reserve> Reserves { get; set; } = new List<Reserve>();
 }

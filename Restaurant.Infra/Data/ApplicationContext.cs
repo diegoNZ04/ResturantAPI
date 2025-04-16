@@ -22,9 +22,9 @@ public class ApplicationContext : DbContext
             .IsRequired();
 
         modelBuilder.Entity<Reserve>()
-            .HasMany(r => r.Tables)
-            .WithOne(t => t.Reserve)
-            .HasForeignKey(t => t.ReserveId)
-            .IsRequired();
+             .HasOne(r => r.Table)
+             .WithMany(t => t.Reserves)
+             .HasForeignKey(r => r.TableId)
+             .OnDelete(DeleteBehavior.Restrict);
     }
 }

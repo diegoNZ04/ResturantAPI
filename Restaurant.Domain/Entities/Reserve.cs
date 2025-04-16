@@ -17,5 +17,6 @@ public class Reserve
     public int UserId { get; set; }
     [ForeignKey("UserId")]
     public User User { get; set; } = null!;
-    public ICollection<Table>? Tables { get; set; } = [];
+    public int TableId { get; set; }
+    public Table Table { get; set; } = null!;
 }
