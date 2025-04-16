@@ -3,6 +3,9 @@
 
 ### DotnetCore ###
 # .NET Core build folders
+
+appsettings.Development.json
+appsettings.json
 bin/
 obj/
 
