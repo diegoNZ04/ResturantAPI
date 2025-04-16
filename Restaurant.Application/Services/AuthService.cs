@@ -37,6 +37,7 @@ public class AuthService : IAuthService
 
         var response = _mapper.Map<LoginUserResponse>(user);
         response.Token = token;
+        response.Role = user.Role.ToString();
 
         return response;
     }
