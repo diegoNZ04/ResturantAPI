@@ -9,8 +9,7 @@ public class Reserve
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-    public string ReservationName { get; set; } = string.Empty;
-    public int TablesNumber { get; set; }
+    public int TableNumber { get; set; }
     public int PeopleNumber { get; set; }
     [DataType(DataType.DateTime)]
     public DateTime ReserveDate { get; set; }
