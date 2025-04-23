@@ -1,4 +1,5 @@
 using Restaurant.Application.Services.Interfaces;
+using BCrypt.Net;
 
 namespace Restaurant.Application.Services;
 
