@@ -1,7 +1,0 @@
-Endpoints
-
-api/reserves/cancel-reserve (PATCH)
-
-api/tables/update-status (PATCH)
-
-
