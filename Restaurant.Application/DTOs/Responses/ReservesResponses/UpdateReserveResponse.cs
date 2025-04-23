@@ -7,5 +7,4 @@ public class UpdateReserveResponse
     public int TableNumber { get; set; }
     public int PeopleNumber { get; set; }
     public DateTime ReserveDate { get; set; }
-    public string Status { get; set; }
 }

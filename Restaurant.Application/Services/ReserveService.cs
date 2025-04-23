@@ -37,7 +37,11 @@ public class ReserveService : IReserveService
 
         await _reserveRepository.AddReserveAsync(reserve);
 
+        table.Status = TableStatus.reserved;
+        await _tableRepository.UpdateTableAsync(table);
+
         var response = _mapper.Map<CreateReserveResponse>(reserve);
+        response.Status = ReserveStatus.active.ToString();
 
         return response;
     }

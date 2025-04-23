@@ -2,6 +2,7 @@ using AutoMapper;
 using Restaurant.Application.DTOs.Requests.TablesRequests;
 using Restaurant.Application.DTOs.Responses.TablesResponses;
 using Restaurant.Domain.Entities;
+using Restaurant.Domain.Enums;
 
 namespace Restaurant.Application.Mappings;
 
@@ -20,7 +21,6 @@ public class TableProfile : Profile
             .ReverseMap();
 
         CreateMap<Table, UpdateTableResponse>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
             .ReverseMap();
 
         CreateMap<Table, GetAllTablesResponse>()

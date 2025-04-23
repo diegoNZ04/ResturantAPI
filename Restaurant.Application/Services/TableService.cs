@@ -3,6 +3,7 @@ using Restaurant.Application.DTOs.Requests.TablesRequests;
 using Restaurant.Application.DTOs.Responses.TablesResponses;
 using Restaurant.Application.Services.Interfaces;
 using Restaurant.Domain.Entities;
+using Restaurant.Domain.Enums;
 using Restaurant.Infra.Repositories.Interfaces;
 
 namespace Restaurant.Application.Services;
@@ -23,6 +24,7 @@ public class TableService : ITableService
         await _tableRepository.AddTableAsync(table);
 
         var response = _mapper.Map<CreateTableResponse>(table);
+        response.Status = TableStatus.available.ToString();
 
         return response;
     }
