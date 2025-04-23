@@ -20,7 +20,6 @@ public class ReserveProfile : Profile
             .ReverseMap();
 
         CreateMap<Reserve, UpdateReserveResponse>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
             .ReverseMap();
 
         CreateMap<Reserve, GetAllReservesResponse>()
