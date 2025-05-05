@@ -91,4 +91,19 @@ public class ReserveService : IReserveService
 
         return response;
     }
+
+    public async Task<UpdateReserveStatusResponse> UpdateReserveStatusAsync(int reserveId, UpdateReserveStatusRequest request)
+    {
+        var reserve = await _reserveRepository.GetReserveByIdAsync(reserveId);
+
+        if (reserve == null)
+            throw new Exception("Reserve not found");
+
+        var updatedStatus = _mapper.Map(request, reserve);
+        await _reserveRepository.UpdateReserveAsync(updatedStatus);
+
+        var response = _mapper.Map<UpdateReserveStatusResponse>(reserve);
+
+        return response;
+    }
 }

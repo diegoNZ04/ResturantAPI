@@ -75,4 +75,18 @@ public class TablesController : ControllerBase
 
         return Ok(updatedTable);
     }
+
+    [Authorize(Roles = "Adm, Client")]
+    [HttpPatch("update-table-status/{id}")]
+    public async Task<IActionResult> UpdateTableStatus([FromBody] UpdateTableStatusRequest request, int id)
+    {
+        var table = await _tableService.GetTableByIdAsync(id);
+
+        if (table == null)
+            return NotFound($"Table with ID {id} not found.");
+
+        var updatedStatus = await _tableService.UpdateTableStatusAsync(id, request);
+
+        return Ok(updatedStatus);
+    }
 }

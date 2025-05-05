@@ -10,4 +10,5 @@ public interface IReserveService
     Task<IEnumerable<GetAllReservesResponse>> GetAllReservesAsync(int page, int pageSize);
     Task<GetReserveByIdResponse> GetReserveByIdAsync(int reserveId);
     Task<UpdateReserveResponse> UpdateReserveAsync(int reserveId, UpdateReserveRequest request);
+    Task<UpdateReserveStatusResponse> UpdateReserveStatusAsync(int reserveId, UpdateReserveStatusRequest request);
 }

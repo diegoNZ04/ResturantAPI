@@ -15,12 +15,18 @@ public class ReserveProfile : Profile
         CreateMap<Reserve, UpdateReserveRequest>()
             .ReverseMap();
 
+        CreateMap<Reserve, UpdateReserveStatusRequest>()
+            .ReverseMap();
+
         CreateMap<Reserve, CreateReserveResponse>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
             .ReverseMap();
 
         CreateMap<Reserve, UpdateReserveResponse>()
             .ReverseMap();
+
+        CreateMap<Reserve, UpdateReserveStatusResponse>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
 
         CreateMap<Reserve, GetAllReservesResponse>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));

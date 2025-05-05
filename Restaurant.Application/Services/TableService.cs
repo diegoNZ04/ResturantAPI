@@ -73,4 +73,19 @@ public class TableService : ITableService
         var response = _mapper.Map<UpdateTableResponse>(table);
         return response;
     }
+
+    public async Task<UpdateTableStatusResponse> UpdateTableStatusAsync(int tableId, UpdateTableStatusRequest request)
+    {
+        var table = await _tableRepository.GetTableByIdAsync(tableId);
+
+        if (table == null)
+            throw new Exception("Table not found");
+
+        var updatedStatus = _mapper.Map(request, table);
+        await _tableRepository.UpdateTableAsync(updatedStatus);
+
+        var response = _mapper.Map<UpdateTableStatusResponse>(table);
+
+        return response;
+    }
 }

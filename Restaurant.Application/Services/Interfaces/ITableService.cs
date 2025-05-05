@@ -10,4 +10,5 @@ public interface ITableService
     Task<IEnumerable<GetAllTablesResponse>> GetAllTablesAsync(int page, int pageSize);
     Task<GetTableByIdResponse> GetTableByIdAsync(int tableId);
     Task<UpdateTableResponse> UpdateTableAsync(int tableId, UpdateTableRequest request);
+    Task<UpdateTableStatusResponse> UpdateTableStatusAsync(int tableId, UpdateTableStatusRequest request);
 }

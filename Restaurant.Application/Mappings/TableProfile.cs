@@ -16,11 +16,18 @@ public class TableProfile : Profile
         CreateMap<Table, UpdateTableRequest>()
             .ReverseMap();
 
+        CreateMap<Table, UpdateTableStatusRequest>()
+            .ReverseMap();
+
         CreateMap<Table, CreateTableResponse>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
             .ReverseMap();
 
         CreateMap<Table, UpdateTableResponse>()
+            .ReverseMap();
+
+        CreateMap<Table, UpdateTableStatusResponse>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
             .ReverseMap();
 
         CreateMap<Table, GetAllTablesResponse>()

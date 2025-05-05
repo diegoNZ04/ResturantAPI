@@ -6,7 +6,7 @@ using Restaurant.Application.Services.Interfaces;
 namespace Restaurant.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/reserves")]
 public class ReservesController : ControllerBase
 {
     private readonly IReserveService _reserveService;
@@ -62,7 +62,7 @@ public class ReservesController : ControllerBase
     }
 
     [Authorize(Roles = "Adm, Client")]
-    [HttpPut("update-reserve/{id}")]
+    [HttpPatch("update-reserve/{id}")]
     public async Task<IActionResult> UpdateReserve([FromBody] UpdateReserveRequest request, int id)
     {
         var reserve = await _reserveService.GetReserveByIdAsync(id);
@@ -73,5 +73,19 @@ public class ReservesController : ControllerBase
         var updatedReserve = await _reserveService.UpdateReserveAsync(id, request);
 
         return Ok(updatedReserve);
+    }
+
+    [Authorize(Roles = "Adm, Client")]
+    [HttpPatch("update-reserve-status/{id}")]
+    public async Task<IActionResult> UpdateReserveStatus([FromBody] UpdateReserveStatusRequest request, int id)
+    {
+        var reserve = await _reserveService.GetReserveByIdAsync(id);
+
+        if (reserve == null)
+            return NotFound($"Reserve with ID {id} not found.");
+
+        var updatedStatus = await _reserveService.UpdateReserveStatusAsync(id, request);
+
+        return Ok(updatedStatus);
     }
 }
