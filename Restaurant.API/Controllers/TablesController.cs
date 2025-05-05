@@ -15,7 +15,7 @@ public class TablesController : ControllerBase
         _tableService = tableService;
     }
 
-    [Authorize(Roles = "Adm, Client")]
+    [Authorize(Roles = "Adm")]
     [HttpPost("create-table")]
     public async Task<IActionResult> CreateTable([FromBody] CreateTableRequest request)
     {
@@ -23,7 +23,7 @@ public class TablesController : ControllerBase
         return CreatedAtAction(nameof(CreateTable), new { id = table.Id }, table);
     }
 
-    [Authorize(Roles = "Adm, Client")]
+    [Authorize(Roles = "Adm")]
     [HttpDelete("delete-table/{id}")]
     public async Task<IActionResult> DeleteTable(int id)
     {
@@ -37,7 +37,7 @@ public class TablesController : ControllerBase
         return NoContent();
     }
 
-    [Authorize(Roles = "Adm, Client")]
+    [Authorize(Roles = "Adm")]
     [HttpGet("get-all-tables")]
     public async Task<IActionResult> GetAllTables([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
@@ -50,7 +50,7 @@ public class TablesController : ControllerBase
     }
 
 
-    [Authorize(Roles = "Adm, Client")]
+    [Authorize(Roles = "Adm")]
     [HttpGet("get-table-by-table/{id}")]
     public async Task<IActionResult> GetTableById(int id)
     {
@@ -62,7 +62,7 @@ public class TablesController : ControllerBase
         return Ok(table);
     }
 
-    [Authorize(Roles = "Adm, Client")]
+    [Authorize(Roles = "Adm")]
     [HttpPatch("update-table/{id}")]
     public async Task<IActionResult> UpdateTable([FromBody] UpdateTableRequest request, int id)
     {
@@ -76,7 +76,7 @@ public class TablesController : ControllerBase
         return Ok(updatedTable);
     }
 
-    [Authorize(Roles = "Adm, Client")]
+    [Authorize(Roles = "Adm")]
     [HttpPatch("update-table-status/{id}")]
     public async Task<IActionResult> UpdateTableStatus([FromBody] UpdateTableStatusRequest request, int id)
     {

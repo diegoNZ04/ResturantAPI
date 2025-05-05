@@ -37,7 +37,7 @@ public class ReservesController : ControllerBase
         return NoContent();
     }
 
-    [Authorize(Roles = "Adm, Client")]
+    [Authorize(Roles = "Adm")]
     [HttpGet("get-all-reserves")]
     public async Task<IActionResult> GetAllReserves([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
@@ -75,7 +75,7 @@ public class ReservesController : ControllerBase
         return Ok(updatedReserve);
     }
 
-    [Authorize(Roles = "Adm, Client")]
+    [Authorize(Roles = "Adm")]
     [HttpPatch("update-reserve-status/{id}")]
     public async Task<IActionResult> UpdateReserveStatus([FromBody] UpdateReserveStatusRequest request, int id)
     {
