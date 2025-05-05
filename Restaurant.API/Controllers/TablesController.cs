@@ -6,7 +6,7 @@ using Restaurant.Application.Services.Interfaces;
 namespace Restaurant.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/tables")]
 public class TablesController : ControllerBase
 {
     private readonly ITableService _tableService;
@@ -63,7 +63,7 @@ public class TablesController : ControllerBase
     }
 
     [Authorize(Roles = "Adm, Client")]
-    [HttpPut("update-reserve/{id}")]
+    [HttpPatch("update-table/{id}")]
     public async Task<IActionResult> UpdateTable([FromBody] UpdateTableRequest request, int id)
     {
         var table = await _tableService.GetTableByIdAsync(id);
