@@ -2,7 +2,6 @@ using AutoMapper;
 using Restaurant.Application.DTOs.Requests.TablesRequests;
 using Restaurant.Application.DTOs.Responses.TablesResponses;
 using Restaurant.Domain.Entities;
-using Restaurant.Domain.Enums;
 
 namespace Restaurant.Application.Mappings;
 

@@ -1,5 +1,3 @@
-using Restaurant.Domain.Enums;
-
 namespace Restaurant.Application.DTOs.Responses.TablesResponses;
 
 public class GetAllTablesResponse

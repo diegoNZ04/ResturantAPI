@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using Restaurant.Application.Converters;
-using Restaurant.Domain.Enums;
 
 namespace Restaurant.Application.DTOs.Responses.ReservesResponses;
 

@@ -1,5 +1,3 @@
-using Restaurant.Domain.Enums;
-
 namespace Restaurant.Application.DTOs.Requests.TablesRequests;
 
 public class UpdateTableRequest

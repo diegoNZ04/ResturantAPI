@@ -34,7 +34,7 @@ public class ReserveService : IReserveService
             throw new Exception("Número de pessoas excede a capacidade da mesa.");
 
         var reserve = _mapper.Map<Reserve>(request);
-
+        reserve.ReserveDate = DateTime.SpecifyKind(request.ReserveDate, DateTimeKind.Utc);
         await _reserveRepository.AddReserveAsync(reserve);
 
         table.Status = TableStatus.reserved;
@@ -85,6 +85,7 @@ public class ReserveService : IReserveService
             throw new Exception("Reserve not found");
 
         var updatedReserve = _mapper.Map(request, reserve);
+        updatedReserve.ReserveDate = DateTime.SpecifyKind(request.ReserveDate, DateTimeKind.Utc);
         await _reserveRepository.UpdateReserveAsync(updatedReserve);
 
         var response = _mapper.Map<UpdateReserveResponse>(reserve);
