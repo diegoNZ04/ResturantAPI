@@ -1,11 +1,16 @@
 using System.Text;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Restaurant.Application.DTOs.Requests.ReservesRequests;
+using Restaurant.Application.DTOs.Requests.TablesRequests;
 using Restaurant.Application.Mappings;
 using Restaurant.Application.Services;
 using Restaurant.Application.Services.Interfaces;
+using Restaurant.Application.Validators.ReserveValidators;
+using Restaurant.Application.Validators.TableValidators;
 using Restaurant.Infra.Data;
 using Restaurant.Infra.Repositories;
 using Restaurant.Infra.Repositories.Interfaces;
@@ -67,7 +72,6 @@ public class Startup
         services.AddDbContext<ApplicationContext>(options =>
             options.UseInMemoryDatabase("RestaurantDB"));
 
-
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
@@ -90,6 +94,11 @@ public class Startup
             typeof(ReserveProfile),
             typeof(TableProfile)
         );
+
+        services.AddScoped<IValidator<CreateReserveRequest>, CreateReserveRequestValidator>();
+        services.AddScoped<IValidator<UpdateReserveRequest>, UpdateReserveRequestValidator>();
+        services.AddScoped<IValidator<CreateTableRequest>, CreateTableRequestValidator>();
+        services.AddScoped<IValidator<UpdateTableRequest>, UpdateTableRequestValidator>();
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITableRepository, TableRepository>();
