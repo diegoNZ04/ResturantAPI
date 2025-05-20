@@ -29,9 +29,7 @@ public class AuthService : IAuthService
         var user = await _userRepository.GetUserByEmailAsync(request.Email);
 
         if (user == null || !_hasherService.VerifyPassword(request.Password, user.PasswordHash))
-        {
             throw new UnauthorizedAccessException("Invalid email or password.");
-        }
 
         var token = _jwtService.GenerateToken(user);
 
