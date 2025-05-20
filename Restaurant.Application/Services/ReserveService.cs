@@ -1,6 +1,8 @@
 using AutoMapper;
+using FluentValidation;
 using Restaurant.Application.DTOs.Requests.ReservesRequests;
 using Restaurant.Application.DTOs.Responses.ReservesResponses;
+using Restaurant.Application.Exceptions;
 using Restaurant.Application.Services.Interfaces;
 using Restaurant.Domain.Entities;
 using Restaurant.Domain.Enums;
@@ -12,29 +14,48 @@ public class ReserveService : IReserveService
 {
     private readonly IReserveRepository _reserveRepository;
     private readonly ITableRepository _tableRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
-    public ReserveService(IReserveRepository reserveRepository, ITableRepository tableRepository, IMapper mapper)
+    private readonly IValidator<CreateReserveRequest> _createReserveValidator;
+    private readonly IValidator<UpdateReserveRequest> _updateReserveValidator;
+    public ReserveService(
+        IReserveRepository reserveRepository,
+        ITableRepository tableRepository,
+        IUserRepository userRepository,
+        IMapper mapper,
+        IValidator<CreateReserveRequest> createReserveValidator,
+        IValidator<UpdateReserveRequest> updateReserveValidator)
     {
         _reserveRepository = reserveRepository;
         _tableRepository = tableRepository;
+        _userRepository = userRepository;
         _mapper = mapper;
+        _createReserveValidator = createReserveValidator;
+        _updateReserveValidator = updateReserveValidator;
     }
 
     public async Task<CreateReserveResponse> CreateReserveAsync(CreateReserveRequest request)
     {
-        var table = await _tableRepository.GetTableByNumberAsync(request.TableNumber);
+        var validationResult = await _createReserveValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.Errors);
 
-        if (table == null)
-            throw new Exception("Mesa não encontrada.");
+        var table = await _tableRepository.GetTableByNumberAsync(request.TableNumber)
+            ?? throw new EntityNotFoundException("Table", request.TableNumber);
 
-        if (table.Status != TableStatus.available)
-            throw new Exception("Mesa não está disponível para reserva.");
+        var user = await _userRepository.GetUserByIdAsync(request.UserId)
+            ?? throw new EntityNotFoundException("User", request.UserId);
 
-        if (request.PeopleNumber > table.Capacity)
-            throw new Exception("Número de pessoas excede a capacidade da mesa.");
+        var overlappingReservation = await _reserveRepository.HasActiveReservationAsync(request.TableNumber, request.ReserveDate);
+        if (overlappingReservation)
+            throw new BusinessRuleException("This table is already reserved for the time indicated.");
+
+        var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"));
+        if (request.ReserveDate <= now)
+            throw new BusinessRuleException("The reservation date must be in the future.");
 
         var reserve = _mapper.Map<Reserve>(request);
-        reserve.ReserveDate = DateTime.SpecifyKind(request.ReserveDate, DateTimeKind.Utc);
+
         await _reserveRepository.AddReserveAsync(reserve);
 
         table.Status = TableStatus.reserved;
@@ -48,12 +69,17 @@ public class ReserveService : IReserveService
 
     public async Task DeleteReserveAsync(int reserveId)
     {
-        var reserve = await _reserveRepository.GetReserveByIdAsync(reserveId);
+        var reserve = await _reserveRepository.GetReserveByIdAsync(reserveId)
+            ?? throw new EntityNotFoundException("Table", reserveId);
 
-        if (reserve != null)
-            await _reserveRepository.DeleteReserveAsync(reserve.Id);
+        var table = await _tableRepository.GetTableByNumberAsync(reserve.TableNumber);
+        if (table != null && table.Status == TableStatus.reserved)
+        {
+            table.Status = TableStatus.available;
+            await _tableRepository.UpdateTableAsync(table);
+        }
 
-        throw new Exception("Reserve not found");
+        await _reserveRepository.DeleteReserveAsync(reserveId);
     }
 
     public async Task<IEnumerable<GetAllReservesResponse>> GetAllReservesAsync(int page, int pageSize)
@@ -67,10 +93,8 @@ public class ReserveService : IReserveService
 
     public async Task<GetReserveByIdResponse> GetReserveByIdAsync(int reserveId)
     {
-        var reserve = await _reserveRepository.GetReserveByIdAsync(reserveId);
-
-        if (reserve == null)
-            throw new Exception("Reserve not found");
+        var reserve = await _reserveRepository.GetReserveByIdAsync(reserveId)
+            ?? throw new EntityNotFoundException("Reserve", reserveId);
 
         var response = _mapper.Map<GetReserveByIdResponse>(reserve);
 
@@ -79,13 +103,15 @@ public class ReserveService : IReserveService
 
     public async Task<UpdateReserveResponse> UpdateReserveAsync(int reserveId, UpdateReserveRequest request)
     {
-        var reserve = await _reserveRepository.GetReserveByIdAsync(reserveId);
+        var reserve = await _reserveRepository.GetReserveByIdAsync(reserveId)
+            ?? throw new EntityNotFoundException("Reserve", reserveId);
 
-        if (reserve == null)
-            throw new Exception("Reserve not found");
+        var validationResult = await _updateReserveValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.Errors);
 
         var updatedReserve = _mapper.Map(request, reserve);
-        updatedReserve.ReserveDate = DateTime.SpecifyKind(request.ReserveDate, DateTimeKind.Utc);
+
         await _reserveRepository.UpdateReserveAsync(updatedReserve);
 
         var response = _mapper.Map<UpdateReserveResponse>(reserve);
@@ -95,12 +121,11 @@ public class ReserveService : IReserveService
 
     public async Task<UpdateReserveStatusResponse> UpdateReserveStatusAsync(int reserveId, UpdateReserveStatusRequest request)
     {
-        var reserve = await _reserveRepository.GetReserveByIdAsync(reserveId);
-
-        if (reserve == null)
-            throw new Exception("Reserve not found");
+        var reserve = await _reserveRepository.GetReserveByIdAsync(reserveId)
+            ?? throw new EntityNotFoundException("Reserve", reserveId);
 
         var updatedStatus = _mapper.Map(request, reserve);
+
         await _reserveRepository.UpdateReserveAsync(updatedStatus);
 
         var response = _mapper.Map<UpdateReserveStatusResponse>(reserve);
