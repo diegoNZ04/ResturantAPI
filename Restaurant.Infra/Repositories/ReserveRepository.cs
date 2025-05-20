@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Restaurant.Domain.Entities;
+using Restaurant.Domain.Enums;
 using Restaurant.Infra.Data;
 using Restaurant.Infra.Repositories.Interfaces;
 
@@ -40,6 +41,14 @@ public class ReserveRepository : IReserveRepository
     {
         return await _context.Reserves
             .FirstOrDefaultAsync(u => u.Id == id);
+    }
+
+    public async Task<bool> HasActiveReservationAsync(int tableNumber, DateTime reserveDate)
+    {
+        return await _context.Reserves.AnyAsync(r =>
+            r.TableNumber == tableNumber &&
+            r.ReserveDate.Date == reserveDate.Date &&
+            r.Status == ReserveStatus.active);
     }
 
     public async Task UpdateReserveAsync(Reserve reserve)

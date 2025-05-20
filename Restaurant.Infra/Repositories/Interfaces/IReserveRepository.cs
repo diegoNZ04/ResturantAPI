@@ -9,4 +9,5 @@ public interface IReserveRepository
     Task<IEnumerable<Reserve>> GetAllReservesAsync(int page, int pageSize);
     Task UpdateReserveAsync(Reserve reserve);
     Task DeleteReserveAsync(int id);
+    Task<bool> HasActiveReservationAsync(int tableNumber, DateTime reserveDate);
 }
