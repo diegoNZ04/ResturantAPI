@@ -70,7 +70,8 @@ public class Startup
         });
 
         services.AddDbContext<ApplicationContext>(options =>
-            options.UseInMemoryDatabase("RestaurantDB"));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+        services.AddDatabaseDeveloperPageExceptionFilter();
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
