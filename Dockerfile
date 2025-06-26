@@ -18,4 +18,4 @@ COPY --from=build /app/publish .
 
 EXPOSE 5202
 
-ENTRYPOINT ["dotnet", "Cep.API.dll"]
+ENTRYPOINT ["dotnet", "Restaurant.API.dll"]

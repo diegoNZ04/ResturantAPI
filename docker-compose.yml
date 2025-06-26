@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  restaurant-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5202:5202"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    restart: unless-stopped
